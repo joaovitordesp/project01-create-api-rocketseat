@@ -10,10 +10,10 @@ export async function transactionsRoutes(app: FastifyInstance){ //todo plugin pr
         preHandler: [checkSessionIdExists]
     }, async(request, reply) => {
         const {sessionId} = request.cookies 
-        const transaction = await knex('transactions')
+        const transactions = await knex('transactions')
             .where('session_id', sessionId).select()
 
-        return {transaction}
+        return {transactions}
     })
 
     app.get('/summary', {
@@ -49,7 +49,7 @@ export async function transactionsRoutes(app: FastifyInstance){ //todo plugin pr
     })
 
     app.post('/', {
-        preHandler: [checkSessionIdExists]
+        //preHandler: [checkSessionIdExists]
     }, async (request, reply) =>{ //reply = response
         const createTransactionBodySchema = z.object({
             title: z.string(),
@@ -66,7 +66,7 @@ export async function transactionsRoutes(app: FastifyInstance){ //todo plugin pr
         if(!sessionId){
             sessionId = randomUUID();
 
-            reply.setCookie('sessionId', sessionId,{
+            reply.cookie('sessionId', sessionId,{
                 path : '/', //caminho no qual o cookie pode trabalhar
                 maxAge: 1000 * 60 * 60 * 24 * 7 //7 days
             })
